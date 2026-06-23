@@ -18,12 +18,14 @@ async function blockDuringMaintenance(req, res, next) {
     const maintenanceEnabled = isMaintenanceEnabled(settings);
 
     if (maintenanceEnabled) {
+      const requestPath = (req.originalUrl || req.url || req.path).split("?")[0];
+      const ext = path.extname(requestPath).toLowerCase();
       const accept = (req.headers.accept || "").toLowerCase();
-      const isHtmlRequest = accept.includes("text/html");
-      const isApiRequest = req.path.startsWith("/api/") || accept.includes("application/json");
+      const isApiRequest = requestPath.startsWith("/api/") || accept.includes("application/json");
+      const isStaticAsset = ext && ext !== ".html";
 
-      if (isHtmlRequest) {
-        return res.status(503).sendFile(path.join(__dirname, "..", "..", "public", "maintenance.html"));
+      if (isStaticAsset) {
+        return next();
       }
 
       if (isApiRequest) {
@@ -32,7 +34,7 @@ async function blockDuringMaintenance(req, res, next) {
         });
       }
 
-      return next();
+      return res.status(503).sendFile(path.join(__dirname, "..", "..", "public", "maintenance.html"));
     }
 
     next();
