@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dishshare</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="maintenance-banner" id="maintenanceBanner" hidden>
+      <strong>Maintenance mode</strong>
+      <span id="maintenanceText">Dishshare is getting a quick polish.</span>
+    </div>
+    <header class="hero">
+      <nav class="nav">
+        <a class="brand" href="#browse" aria-label="Cook Boo home">
+          <span class="brand-mark">DS</span>
+          <span>Dishshare</span>
+        </a>
+        <div class="nav-actions" id="accountPanel"></div>
+      </nav>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Private family recipe box</p>
+          <h1>Recipes worth remembering, beautifully organized.</h1>
+          <p class="hero-text">
+            Browse every family favorite, save the dishes you love, and keep the stories behind
+            them close.
+          </p>
+          <div class="hero-actions">
+            <button id="addRecipeHero" type="button">Add Recipe</button>
+            <button class="secondary" id="viewFavoritesHero" type="button">Favorites</button>
+          </div>
+        </div>
+        <div class="hero-card" aria-label="Featured cookbook stats">
+          <div>
+            <span id="heroRecipeCount">0</span>
+            <small>recipes</small>
+          </div>
+          <div>
+            <span id="heroTagCount">0</span>
+            <small>tags</small>
+          </div>
+          <div>
+            <span id="heroMemberLabel">Family</span>
+            <small>sharing</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="tabs" aria-label="Cookbook views">
+        <button class="tab active" data-view="browse" type="button">Browse</button>
+        <button class="tab" data-view="favorites" type="button">Favorites</button>
+        <button class="tab" data-view="mine" type="button">My Recipes</button>
+        <button class="tab admin-only" data-view="admin" type="button" hidden>Admin</button>
+      </section>
+
+      <section class="toolbar" aria-label="Recipe filters">
+        <label class="search">
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="Search title, ingredient, story..." />
+        </label>
+        <label>
+          <span>Tag</span>
+          <select id="tagFilter">
+            <option value="">All tags</option>
+          </select>
+        </label>
+        <label>
+          <span>Meal</span>
+          <select id="mealFilter">
+            <option value="all">All meals</option>
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="dessert">Dessert</option>
+            <option value="snack">Snack</option>
+            <option value="drink">Drink</option>
+            <option value="side">Side</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label>
+          <span>Difficulty</span>
+          <select id="difficultyFilter">
+            <option value="all">Any</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="special">Special</option>
+          </select>
+        </label>
+        <label>
+          <span>Sort</span>
+          <select id="sortFilter">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="title">Title</option>
+            <option value="popular">Most loved</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="content-grid">
+        <div>
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Recipe box</p>
+              <h2 id="viewTitle">Browse Recipes</h2>
+            </div>
+            <span id="recipeCount">0 recipes</span>
+          </div>
+          <div class="recipe-grid" id="recipeGrid"></div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="quick-card">
+            <p class="eyebrow">This week</p>
+            <h2>Cook something people ask for again.</h2>
+            <p>Use tags like holiday, freezer, comfort, weeknight, gluten-free, or kid-favorite.</p>
+            <button id="addRecipeSide" type="button">Add Recipe</button>
+          </div>
+          <div class="tag-cloud" id="tagCloud"></div>
+        </aside>
+      </section>
+
+      <section class="admin-panel" id="adminPanel" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Admin</p>
+            <h2>Family Cookbook Control Room</h2>
+          </div>
+          <div class="admin-toolbar">
+            <button id="maintenanceToggle" class="secondary" type="button">Maintenance Off</button>
+            <button id="refreshAdmin" class="secondary" type="button">Refresh</button>
+          </div>
+        </div>
+        <div class="admin-stats" id="adminStats"></div>
+        <div class="admin-grid">
+          <div class="admin-card">
+            <h3>Members</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTable"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="admin-card">
+            <h3>Recent Recipes</h3>
+            <div id="adminRecipes"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="authDialog" class="modal">
+      <form method="dialog" class="dialog-close">
+        <button aria-label="Close">x</button>
+      </form>
+      <div class="auth-tabs">
+        <button id="loginTab" class="active" type="button">Log in</button>
+        <button id="registerTab" type="button">Create account</button>
+      </div>
+      <form id="authForm">
+        <label id="nameField">
+          <span>Name</span>
+          <input name="name" type="text" autocomplete="name" />
+        </label>
+        <label>
+          <span>Email</span>
+          <input name="email" type="email" autocomplete="email" required />
+        </label>
+        <label>
+          <span>Password</span>
+          <input name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit" id="authSubmit">Log in</button>
+      </form>
+      <p class="message" id="authMessage"></p>
+    </dialog>
+
+    <dialog id="recipeDialog" class="recipe-modal"></dialog>
+
+    <aside class="drawer" id="recipeDrawer" aria-hidden="true">
+      <div class="drawer-backdrop" data-close-drawer></div>
+      <div class="drawer-panel">
+        <div class="drawer-header">
+          <div>
+            <p class="eyebrow">Recipe editor</p>
+            <h2 id="drawerTitle">Add Recipe</h2>
+          </div>
+          <button class="ghost" data-close-drawer type="button" aria-label="Close recipe editor">x</button>
+        </div>
+        <form id="recipeForm">
+          <input name="id" type="hidden" />
+          <div class="form-row">
+            <label>
+              <span>Title</span>
+              <input name="title" type="text" placeholder="Grandma's Sunday Sauce" required />
+            </label>
+            <label>
+              <span>Source</span>
+              <input name="sourceName" type="text" placeholder="Aunt Maria" />
+            </label>
+          </div>
+          <label>
+            <span>Description</span>
+            <textarea name="description" rows="3" placeholder="A quick note people will see on the recipe card"></textarea>
+          </label>
+          <div class="form-row four">
+            <label>
+              <span>Meal</span>
+              <select name="mealType">
+                <option value="dinner">Dinner</option>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dessert">Dessert</option>
+                <option value="snack">Snack</option>
+                <option value="drink">Drink</option>
+                <option value="side">Side</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label>
+              <span>Difficulty</span>
+              <select name="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="special">Special</option>
+              </select>
+            </label>
+            <label>
+              <span>Prep</span>
+              <input name="prepMinutes" type="number" min="0" placeholder="15" />
+            </label>
+            <label>
+              <span>Cook</span>
+              <input name="cookMinutes" type="number" min="0" placeholder="45" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              <span>Servings</span>
+              <input name="servings" type="number" min="1" value="4" />
+            </label>
+            <label>
+              <span>Photo URL</span>
+              <input name="imageUrl" type="url" placeholder="https://..." />
+            </label>
+          </div>
+          <label>
+            <span>Ingredients</span>
+            <textarea name="ingredients" rows="7" placeholder="One ingredient per line" required></textarea>
+          </label>
+          <label>
+            <span>Cooking steps</span>
+            <textarea name="steps" rows="8" placeholder="One step per line" required></textarea>
+          </label>
+          <label>
+            <span>Family story</span>
+            <textarea name="familyStory" rows="4" placeholder="When do you make this? Who taught it to you?"></textarea>
+          </label>
+          <div class="form-row">
+            <label>
+              <span>Tags</span>
+              <input name="tags" type="text" placeholder="dinner, holiday, vegetarian" />
+            </label>
+            <label>
+              <span>Status</span>
+              <select name="status">
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+              </select>
+            </label>
+          </div>
+          <div class="drawer-actions">
+            <button type="submit">Save Recipe</button>
+            <button class="secondary" data-close-drawer type="button">Cancel</button>
+          </div>
+          <p class="message" id="recipeMessage"></p>
+        </form>
+      </div>
+    </aside>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
