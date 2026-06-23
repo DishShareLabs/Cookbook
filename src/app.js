@@ -14,13 +14,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-// Apply maintenance middleware globally (before routes)
-app.use(blockDuringMaintenance);
-
 app.use("/api/auth", authRoutes);
-app.use("/api/config", configRoutes);
-app.use("/api/recipes", recipeRoutes);
 app.use("/api/admin", adminRoutes);
+
+// Apply maintenance middleware only to these routes (not admin)
+app.use("/api/config", blockDuringMaintenance, configRoutes);
+app.use("/api/recipes", blockDuringMaintenance, recipeRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({ ok: true, app: "family-cookbook" });
