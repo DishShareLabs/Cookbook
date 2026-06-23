@@ -10,7 +10,7 @@ async function blockDuringMaintenance(req, res, next) {
 
     if (settings.maintenanceMode) {
       return res.status(503).json({
-        message: settings.maintenanceMessage || "Cook Boo is temporarily in maintenance mode."
+        message: settings.maintenanceMessage || "Dishshare is down for maintenance currently."
       });
     }
 
