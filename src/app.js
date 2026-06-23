@@ -6,12 +6,16 @@ const authRoutes = require("./routes/auth");
 const recipeRoutes = require("./routes/recipes");
 const adminRoutes = require("./routes/admin");
 const configRoutes = require("./routes/config");
+const blockDuringMaintenance = require("./middleware/maintenance");
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "..", "public")));
+
+// Apply maintenance middleware globally (before routes)
+app.use(blockDuringMaintenance);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/config", configRoutes);

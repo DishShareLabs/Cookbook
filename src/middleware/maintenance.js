@@ -1,3 +1,4 @@
+const path = require("path");
 const Setting = require("../models/Setting");
 
 async function blockDuringMaintenance(req, res, next) {
@@ -9,9 +10,15 @@ async function blockDuringMaintenance(req, res, next) {
     const settings = await Setting.getSiteSettings();
 
     if (settings.maintenanceMode) {
-      return res.status(503).json({
-        message: settings.maintenanceMessage || "Cook Boo is temporarily in maintenance mode."
-      });
+      // For API requests, return JSON
+      if (req.path.startsWith("/api/")) {
+        return res.status(503).json({
+          message: settings.maintenanceMessage || "Dishshare is down for maintenance currently."
+        });
+      }
+      
+      // For other requests, serve the maintenance page
+      return res.status(503).sendFile(path.join(__dirname, "..", "..", "public", "maintenance.html"));
     }
 
     next();
