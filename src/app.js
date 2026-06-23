@@ -25,6 +25,9 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, app: "family-cookbook" });
 });
 
+// Apply maintenance middleware before the catch-all route
+app.use(blockDuringMaintenance);
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
