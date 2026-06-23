@@ -7,18 +7,18 @@ const recipeRoutes = require("./routes/recipes");
 const adminRoutes = require("./routes/admin");
 const configRoutes = require("./routes/config");
 const blockDuringMaintenance = require("./middleware/maintenance");
+const { optionalAuth } = require("./middleware/auth");
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "..", "public")));
+app.use(optionalAuth);
+app.use(express.static(path.join(__dirname, "..", "public"), { index: false }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
-
-// Apply maintenance middleware only to these routes (not admin)
-app.use("/api/config", blockDuringMaintenance, configRoutes);
+app.use("/api/config", configRoutes);
 app.use("/api/recipes", blockDuringMaintenance, recipeRoutes);
 
 app.get("/api/health", (req, res) => {

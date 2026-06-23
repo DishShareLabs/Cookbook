@@ -60,6 +60,22 @@ async function api(path, options = {}) {
   return data;
 }
 
+function formatMaintenanceLabel(enabled) {
+  return enabled ? "Maintenance On" : "Maintenance Off";
+}
+
+async function updateMaintenanceMode(enabled) {
+  const data = await api("/api/admin/maintenance", {
+    method: "PATCH",
+    body: JSON.stringify({ maintenanceMode: enabled })
+  });
+
+  state.maintenanceMode = data.settings.maintenanceMode;
+  state.maintenanceMessage = data.settings.maintenanceMessage;
+  maintenanceToggle.textContent = formatMaintenanceLabel(state.maintenanceMode);
+  return data;
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -67,6 +83,28 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function renderMaintenanceBanner() {
+  if (!maintenanceBanner) return;
+
+  if (state.maintenanceMode && state.user?.role !== "admin") {
+    maintenanceText.textContent = state.maintenanceMessage || "Dishshare is getting a quick polish.";
+    maintenanceBanner.hidden = false;
+  } else {
+    maintenanceBanner.hidden = true;
+  }
+}
+
+async function loadSettings() {
+  try {
+    const data = await api("/api/config");
+    state.maintenanceMode = data.maintenanceMode;
+    state.maintenanceMessage = data.maintenanceMessage;
+    renderMaintenanceBanner();
+  } catch (error) {
+    console.warn("Could not load site settings", error.message);
+  }
 }
 
 function fallbackPhoto(recipe) {
@@ -273,6 +311,7 @@ async function loadMe() {
     state.user = null;
   }
   renderAccount();
+  renderMaintenanceBanner();
 }
 
 async function logout() {
@@ -513,6 +552,11 @@ async function loadAdmin() {
       await Promise.all([loadAdmin(), loadRecipes()]);
     });
   });
+
+  state.maintenanceMode = summary.settings.maintenanceMode;
+  state.maintenanceMessage = summary.settings.maintenanceMessage;
+  maintenanceToggle.textContent = formatMaintenanceLabel(state.maintenanceMode);
+  renderMaintenanceBanner();
 }
 
 async function updateUser(id, changes) {
@@ -521,6 +565,18 @@ async function updateUser(id, changes) {
     body: JSON.stringify(changes)
   });
   await loadAdmin();
+}
+
+async function toggleMaintenanceMode() {
+  try {
+    maintenanceToggle.disabled = true;
+    await updateMaintenanceMode(!state.maintenanceMode);
+    await loadAdmin();
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    maintenanceToggle.disabled = false;
+  }
 }
 
 async function updateRecipeStatus(id, status) {
@@ -588,6 +644,7 @@ document.querySelector("#viewFavoritesHero").addEventListener("click", async () 
   await loadRecipes();
 });
 document.querySelector("#refreshAdmin").addEventListener("click", loadAdmin);
+maintenanceToggle.addEventListener("click", toggleMaintenanceMode);
 
 recipeForm.addEventListener("submit", saveRecipe);
 
@@ -607,6 +664,7 @@ searchInput.addEventListener("input", () => {
 (async function init() {
   renderTabs();
   await loadMe();
+  await loadSettings();
   await loadRecipes();
   if (state.user?.role === "admin") await loadAdmin();
 })();
