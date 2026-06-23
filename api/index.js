@@ -11,8 +11,10 @@ module.exports = async function handler(req, res) {
     return app(req, res);
   } catch (error) {
     console.error("API startup error:", error);
+
+    const message = error?.message || "The cookbook API could not start.";
     return res.status(500).json({
-      message: "The cookbook API could not connect to the database."
+      message
     });
   }
 };
