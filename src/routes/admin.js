@@ -99,6 +99,7 @@ router.patch("/maintenance", async (req, res) => {
 
     if (typeof req.body.maintenanceMode === "boolean") {
       settings.maintenanceMode = req.body.maintenanceMode;
+      settings.maintenceMode = req.body.maintenanceMode;
     }
 
     if (typeof req.body.maintenanceMessage === "string") {

@@ -10,7 +10,11 @@ router.get("/", optionalAuth, async (req, res) => {
     const settings = await Setting.getSiteSettings();
 
     res.json({
-      maintenanceMode: settings.maintenanceMode,
+      maintenanceMode: typeof settings.maintenanceMode === "boolean"
+        ? settings.maintenanceMode
+        : typeof settings.maintenceMode === "boolean"
+        ? settings.maintenceMode
+        : false,
       maintenanceMessage: settings.maintenanceMessage,
       isAdmin: req.user?.role === "admin"
     });

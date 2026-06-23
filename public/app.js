@@ -48,6 +48,7 @@ const maintenanceToggle = document.querySelector("#maintenanceToggle");
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
+    credentials: "same-origin",
     headers: { "Content-Type": "application/json" },
     ...options
   });
