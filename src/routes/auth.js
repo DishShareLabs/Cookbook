@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
 const requireAuth = require("../middleware/auth");
+const { normalizeRegistrationInput } = require("./authValidation");
 
 const router = express.Router();
 const cookieOptions = {
@@ -33,23 +34,16 @@ function setAuthCookie(res, user) {
 
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const normalized = normalizeRegistrationInput(req.body);
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "Name, email, and password are required." });
+    if (normalized.error) {
+      return res.status(400).json({ message: normalized.error });
     }
 
-    if (password.length < 8) {
-      return res.status(400).json({ message: "Password must be at least 8 characters." });
-    }
-
-    const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
-    if (existingUser) {
-      return res.status(409).json({ message: "That email is already registered." });
-    }
-
+    const { name, email, password } = normalized;
     const passwordHash = await bcrypt.hash(password, 12);
     const userCount = await User.estimatedDocumentCount();
+
     const user = await User.create({
       name,
       email,
@@ -60,6 +54,10 @@ router.post("/register", async (req, res) => {
     setAuthCookie(res, user);
     res.status(201).json({ user: publicUser(user) });
   } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(409).json({ message: "That email is already registered." });
+    }
+
     res.status(500).json({ message: "Could not create your account." });
   }
 });

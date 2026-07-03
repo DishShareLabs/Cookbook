@@ -15,8 +15,17 @@ const port = process.env.PORT || 3000;
 // 4. ATTEMPT TO CONNECT TO MONGODB ATLAS AND START EXPRESS
 connectDatabase()
   .then(() => {
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       console.log(`Family Cookbook is running at http://localhost:${port}`);
+    });
+
+    server.on("error", (error) => {
+      if (error.code === "EADDRINUSE") {
+        console.error(`Port ${port} is already in use. Please stop the existing process or choose a different PORT.`);
+        process.exit(1);
+      }
+
+      throw error;
     });
   })
   .catch((error) => {
