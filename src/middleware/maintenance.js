@@ -24,6 +24,11 @@ async function blockDuringMaintenance(req, res, next) {
       const isApiRequest = requestPath.startsWith("/api/") || accept.includes("application/json");
       const isStaticAsset = ext && ext !== ".html";
 
+      // Don't redirect if already on maintenance page
+      if (requestPath === "/maintenance") {
+        return next();
+      }
+
       if (isStaticAsset) {
         return next();
       }
@@ -34,7 +39,8 @@ async function blockDuringMaintenance(req, res, next) {
         });
       }
 
-      return res.status(503).sendFile(path.join(__dirname, "..", "..", "public", "maintenance.html"));
+      // Redirect to maintenance page instead of using sendFile for Vercel compatibility
+      return res.status(503).redirect("/maintenance");
     }
 
     next();
