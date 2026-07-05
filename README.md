@@ -147,6 +147,26 @@ For a public deployed site, use MongoDB Atlas or another remotely accessible Mon
 
 The same login and recipe features work locally and on Vercel because the browser calls same-origin `/api/...` endpoints.
 
+---
+
+## 🐛 Known Issues & Security Tracking
+
+We maintain full transparency regarding active tracking items within our development pipeline. Below are the current critical anomalies identified within the repository:
+
+> [!CAUTION]
+> ### ⚠️ Authentication Engine: Account Creation Manipulation
+> * **Vulnerability ID:** DSL-2026-VULN-01
+> * **Severity:** Critical / High Risk
+> * **Target Component:** User Onboarding & Registration Ingestion (`/api/auth/register`)
+> 
+> **Description:** A validation mismatch exists where client-side parameter tampering (via browser developer tooling during payload submission) can bypass standard registration constraints, potentially allowing unverified account generation.
+> 
+> **Current Status:** **Unmitigated.** This issue has no planned patch as of right now. Production environments should implement independent server-side validation checks or firewall-level rate limiting on authentication endpoints to mitigate risk.
+
+---
+
+> 📬 **Vulnerability Reporting:** To report a new security vulnerability or bug found within any DishShare Labs project, please do not open a public issue. Review our `SECURITY.md` file for instructions on secure, encrypted disclosure.
+
 ## API Overview
 
 - `POST /api/auth/register` creates a user and logs them in.
