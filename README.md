@@ -149,6 +149,7 @@ The same login and recipe features work locally and on Vercel because the browse
 
 ---
 
+
 ## 🐛 Known Issues & Security Tracking
 
 We maintain full transparency regarding active tracking items within our development pipeline. Below are the current critical anomalies identified within the repository:
@@ -159,9 +160,11 @@ We maintain full transparency regarding active tracking items within our develop
 > * **Severity:** Critical / High Risk
 > * **Target Component:** User Onboarding & Registration Ingestion (`/api/auth/register`)
 > 
-> **Description:** A validation mismatch exists where client-side parameter tampering (via browser developer tooling during payload submission) can bypass standard registration constraints, potentially allowing unverified account generation.
+> **Description:** A validation mismatch exists where client-side parameter tampering during local execution or layout manipulation can bypass standard registration constraints, potentially allowing unverified account generation.
 > 
-> **Current Status:** **Unmitigated.** This issue has no planned patch as of right now. Production environments should implement independent server-side validation checks or firewall-level rate limiting on authentication endpoints to mitigate risk.
+> **Current Status:** **Unmitigated.** This issue has no planned patch as of right now. 
+> 
+> **Architectural Note for Hybrid Deployments:** While this codebase is optimized for seamless, single-click deployment to Vercel via serverless functions, running a production-exposed instance without manual backend remediation is not recommended. If deploying publicly, ensure you implement robust server-side schema constraints or network-level rate limiting on authentication routes to mitigate exposure. Local-only (`localhost`) instances are structurally isolated but remain inherently unpatched.
 
 ---
 
