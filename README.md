@@ -1,6 +1,6 @@
 # Family Cookbook
 
-A full-stack family cookbook website. Family members can create an account, log in, browse recipes, search and filter, favorite dishes, submit recipes, edit their own recipes, and use an admin panel to manage users and recipe status. Recipes and user accounts are stored in MongoDB.
+A full-stack family cookbook website. Family members can create an account, log in, browse recipes, search and filter, favorite dishes, submit recipes, edit their own recipes, and use an admin panel to manage users and recipe status. Recipes and user accounts are stored in MongoDB. On the example deployed site, it has been disabled. It's just mean to show what it look's like.
 
 ## Features
 
