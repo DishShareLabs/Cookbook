@@ -164,7 +164,7 @@ We maintain full transparency regarding active tracking items within our develop
 > 
 > **Current Status:** **Unmitigated.** This issue has no planned patch as of right now. 
 > 
-> **Architectural Note for Hybrid Deployments:** While this codebase is optimized for seamless, single-click deployment to Vercel via serverless functions, running a production-exposed instance without manual backend remediation is not recommended. If deploying publicly, ensure you implement robust server-side schema constraints or network-level rate limiting on authentication routes to mitigate exposure. Local-only (`localhost`) instances are structurally isolated but remain inherently unpatched.
+> **Architectural Note for Hybrid Deployments:** While this codebase is optimized for seamless, single-click deployment to Vercel via serverless functions, running a production-exposed instance without manual backend remediation is not recommended. If deploying publicly, ensure you implement robust server-side schema constraints or network-level rate limiting on authentication routes to mitigate exposure. Local-only (`localhost`) instances are structurally isolated but remain inherently unpatched. A captcha system could pottentialy fix this as well for public versions.
 
 ---
 
